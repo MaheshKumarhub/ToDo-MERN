@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const admin = require('firebase-admin');
+const path = require('path'); // Import the path module for blank screen after reload
 require('dotenv').config();
 
 // Initialize Firebase Admin SDK
@@ -131,6 +132,14 @@ app.delete('/todos/:id', async (req, res) => {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
+});
+
+// Serve static files from the React app for blank screen in reload
+app.use(express.static(path.join(__dirname, 'build')));
+
+// The "catchall" handler: for any request that doesn't match an API route, send back React's index.html file for blank screen in reload.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // Start the server
